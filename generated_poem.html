@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verse Generator</title>
+    <style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+        padding: 20px;
+        text-align: center;
+    }
+    h1 {
+        color: #333;
+    }
+    form {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+    label {
+        font-weight: bold;
+        margin-top: 10px;
+        display: block;
+        color: #555;
+    }
+    input, select, button {
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    button {
+        background-color: #5CDB95;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-top: 15px;
+    }
+    button:hover {
+        background-color: #53b883;
+    }
+    #generated_poem {
+        margin-top: 20px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        text-align: left;
+    }
+    #generated_poem p {
+        margin: 0;
+        line-height: 1.6;
+        color: #333;
+    }
+</style>
+
+    <script>
+            const emotionDatabase = {
+            'happy': {
+                'opening': ['In the sunshine of joy,', 'With a heart full of laughter,'],
+                'middle': ['Dancing through the meadows,', 'Painting rainbows in the sky,'],
+                'ending': ['Forever smiling, forever free.', 'In happiness, we find our glee.']
+            },
+            'sad': {
+                'opening': ['Beneath the weight of sorrow,', 'In the shadows of despair,'],
+                'middle': ['Tears like silent rivers flow,', 'Echoes of a broken heart,'],
+                'ending': ['In the silence, we find release.', 'A mournful heart seeks inner peace.']
+            },
+            'anger': {
+                'opening': ['In the fire of rage,', 'A tempest of fury consumes,'],
+                'middle': ['Thunder roars with every heartbeat,', 'Cracks in the foundation of calm,'],
+                'ending': ['In the embers, a rebirth.', 'From anger\'s grip, we unearth.']
+            },
+            'pain': {
+                'opening': ['Amidst the echoes of pain,', 'In the depths of suffering,'],
+                'middle': ['Each step a journey through thorns,', 'A symphony of ache,'],
+                'ending': ['In scars, a tale unfolds.', 'From pain, strength molds.']
+            },
+            'fear': {
+                'opening': ['In the shadows of apprehension,', 'A whisper of unease creeps,'],
+                'middle': ['Every step echoes with doubt,', 'A shiver in the spine,'],
+                'ending': ['In courage\'s embrace, fears recede.', 'From fear\'s grasp, we\'re freed.']
+            },
+            'surprise': {
+                'opening': ['In the magic of the unexpected,', 'A gasp in the air,'],
+                'middle': ['Eyes widen in wonder,', 'A dance with the unknown,'],
+                'ending': ['In surprises, life\'s rhythm beats.', 'A tapestry woven with unforeseen feats.']
+            },
+            'disgust': {
+                'opening': ['In the repugnance of the moment,', 'A recoil from the vile,'],
+                'middle': ['A bitter taste in every breath,', 'Washing hands of the impure,'],
+                'ending': ['In cleansing, a renewal of self.', 'From disgust, we find our true wealth.']
+            }
+        };
+
+                function generatePoem(emotion, numLines, customLines = []) {
+    if (!emotionDatabase[emotion]) {
+        alert("Invalid emotion. Please choose from the provided options.");
+        return [];
+    }
+    let opening = emotionDatabase[emotion].opening[Math.floor(Math.random() * emotionDatabase[emotion].opening.length)];
+    // Adjust the middle lines count by subtracting the number of custom lines and fixed opening and ending lines
+    let middleLinesCount = Math.max(numLines - customLines.length - 2, 0);
+    let middle = new Array(middleLinesCount).fill(null).map(() => 
+        emotionDatabase[emotion].middle[Math.floor(Math.random() * emotionDatabase[emotion].middle.length)] + ','
+    );
+    let ending = emotionDatabase[emotion].ending[Math.floor(Math.random() * emotionDatabase[emotion].ending.length)];
+    return [opening, ...customLines, ...middle, ending];
+}
+
+
+        function addCustomLineInputs() {
+            var numCustomLines = document.getElementById('num_custom_lines').value;
+            var customLinesDiv = document.getElementById('custom_lines');
+            customLinesDiv.innerHTML = ''; // Clear existing inputs
+
+            for (var i = 0; i < numCustomLines; i++) {
+                var input = document.createElement('input');
+                input.type = 'text';
+                input.id = 'custom_line_' + (i + 1);
+                input.placeholder = 'Custom Line ' + (i + 1);
+                customLinesDiv.appendChild(input);
+                customLinesDiv.appendChild(document.createElement('br'));
+            }
+        }
+
+        function generatePoemEvent(event) {
+            event.preventDefault();
+
+            let emotion = document.getElementById('emotion').value;
+            let numLines = parseInt(document.getElementById('num_lines').value);
+            let numCustomLines = parseInt(document.getElementById('num_custom_lines').value);
+
+            let customLines = [];
+            for (let i = 0; i < numCustomLines; i++) {
+                let customLine = document.getElementById('custom_line_' + (i + 1)).value;
+                customLines.push(customLine);
+            }
+
+            let generatedPoem = generatePoem(emotion, numLines, customLines);
+
+            // Display the generated poem
+            let poemDiv = document.getElementById('generated_poem');
+            poemDiv.innerHTML = generatedPoem.join('<br>');
+        }
+    </script>
+</head>
+<body>
+    <h1>Verse Generator</h1>
+    
+    <form id="verseForm" onsubmit="generatePoemEvent(event)">
+        <label for="emotion">Emotion:</label>
+        <select id="emotion" required>
+            <option value="happy">Happy</option>
+            <option value="sad">Sad</option>
+            <option value="anger">Anger</option>
+            <option value="pain">Pain</option>
+            <option value="fear">Fear</option>
+            <option value="surprise">Surprise</option>
+            <option value="disgust">Disgust</option>
+        </select>
+        <br>
+
+        <label for="num_lines">Number of Lines:</label>
+        <input type="number" id="num_lines" min="1" required>
+        <br>
+
+        <label for="num_custom_lines">Number of Custom Lines:</label>
+        <input type="number" id="num_custom_lines" min="0" required oninput="addCustomLineInputs()">
+        <br>
+
+        <div id="custom_lines"></div>
+
+        <button type="submit">Generate Poem</button>
+    </form>
+
+    <div id="generated_poem"></div>
+</body>
+</html>
